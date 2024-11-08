@@ -1,49 +1,38 @@
-#include <sdl3/SDL.h>
-#include <iostream>
+#ifndef UNICODE
+#define UNICODE
+#endif
 
-int main()
+#include <windows.h>
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-    bool isGameRunning = true;
 
-    SDL_Window *window;
-    SDL_Renderer *renderer;
+    const wchar_t className[] = L"prefClass";
 
-    SDL_Init(SDL_INIT_VIDEO);
+    WNDCLASS wc = {};
 
-    window = SDL_CreateWindow("pref", 800, 600, SDL_WINDOW_RESIZABLE);
-    renderer = SDL_CreateRenderer(window, NULL);
+    wc.lpfnWndProc = DefWindowProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = className;
 
-    if (window == NULL)
+    RegisterClass(&wc);
+
+    HWND winHandle = CreateWindowEx(0, className, L"Pref",
+                                    WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+                                    CW_USEDEFAULT, CW_USEDEFAULT,
+                                    CW_USEDEFAULT, NULL, NULL,
+                                    hInstance, NULL);
+
+    if (winHandle == NULL)
     {
         return 1;
     }
 
-    while (isGameRunning)
+    ShowWindow(winHandle, true);
+
+    while (true)
     {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-            case SDL_EVENT_QUIT:
-                isGameRunning = false;
-                break;
-
-            default:
-                break;
-            }
-        }
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        SDL_RenderPresent(renderer);
     }
-
-    SDL_Delay(1000);
-
-    SDL_DestroyWindow(window);
-
-    SDL_Quit();
 
     return 0;
 }
