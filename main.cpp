@@ -1,14 +1,17 @@
 #include <sdl3/SDL.h>
+#include <iostream>
 
 int main()
 {
     bool isGameRunning = true;
 
     SDL_Window *window;
+    SDL_Renderer *renderer;
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("pref", 800, 600, SDL_WINDOW_BORDERLESS);
+    window = SDL_CreateWindow("pref", 800, 600, SDL_WINDOW_RESIZABLE);
+    renderer = SDL_CreateRenderer(window, NULL);
 
     if (window == NULL)
     {
@@ -30,6 +33,10 @@ int main()
                 break;
             }
         }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
     }
 
     SDL_Delay(1000);
