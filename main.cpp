@@ -3,19 +3,38 @@
 #endif
 
 #include <windows.h>
+#include <iostream>
+
+LRESULT CALLBACK winProc(HWND winHandle, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+
+    switch (msg)
+    {
+    case WM_DESTROY:
+        PostQuitMessage(64);
+        break;
+
+    default:
+        return DefWindowProc(winHandle, msg, wParam, lParam);
+        break;
+    }
+    return 0;
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 
     const wchar_t className[] = L"prefClass";
 
-    WNDCLASS wc = {};
+    WNDCLASSEX wc = {0};
 
-    wc.lpfnWndProc = DefWindowProc;
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.lpfnWndProc = winProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = className;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 
-    RegisterClass(&wc);
+    RegisterClassEx(&wc);
 
     HWND winHandle = CreateWindowEx(0, className, L"Pref",
                                     WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
@@ -25,13 +44,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     if (winHandle == NULL)
     {
-        return 1;
+        std::cout << GetLastError();
     }
 
     ShowWindow(winHandle, true);
+    UpdateWindow(winHandle);
 
-    while (true)
+    MSG msg;
+    while (GetMessage(&msg, NULL, 0, 0))
     {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
 
     return 0;
